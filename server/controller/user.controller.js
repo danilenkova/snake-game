@@ -13,24 +13,6 @@ class UserController {
     const users = await db.query("SELECT * FROM users");
     res.json(users.rows);
   }
-  async getOneUser(req, res) {
-    const id = req.params.id;
-    const user = await db.query(`SELECT * FROM users where id = $1`, [id]);
-    res.json(user.rows[0]);
-  }
-  async updateUser(req, res) {
-    const { id, name, score } = req.body;
-    const user = await db.query(
-      `UPDATE users set name = $1, score = $2 where id = $3 RETURNING *`,
-      [name, score, id]
-    );
-    res.json(user.rows[0]);
-  }
-  async deleteUser(req, res) {
-    const id = req.params.id;
-    const user = await db.query(`DELETE FROM users where id = $1`, [id]);
-    res.json(user.rows[0]);
-  }
 }
 
 module.exports = new UserController();
