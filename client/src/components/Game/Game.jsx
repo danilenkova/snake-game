@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { API_URL } from "../../config";
+import { API_URL } from "../config";
 import { Container, Box, GameArea } from "./Game.styled";
 import StartBox from "./StartBox/StartBox";
 import GameOver from "./GameOver/GameOver";
@@ -236,7 +236,12 @@ class App extends Component {
   gameOver() {
     clearInterval(this.timerID);
     this.gameScore = this.state.score;
-    this.postInData();
+    this.postInData().then(
+      this.getFromData().then((res) => {
+        this.setState({ board: res });
+        console.log(this.state.board);
+      })
+    );
     this.setState(initialState);
     this.setState({
       feed: getRandomCoordinates(),
@@ -254,20 +259,31 @@ class App extends Component {
     });
   }
 
-  postInData() {
+  async postInData() {
+    const url = `${API_URL}/api/user`;
     const postToAdd = {
       name: this.state.name,
       score: this.gameScore,
     };
-    fetch(`${API_URL}/api/user`, {
+    const option = {
       method: "POST",
       body: JSON.stringify(postToAdd),
       headers: {
         "Content-Type": "application/json; charset=UTF-8",
       },
-    })
-      .then((response) => response.json())
-      .catch((error) => console.log(error));
+    };
+    const response = await fetch(url, option);
+    const res = response.json();
+    return res;
+    // fetch(`${API_URL}/api/user`, {
+    //   method: "POST",
+    //   body: JSON.stringify(postToAdd),
+    //   headers: {
+    //     "Content-Type": "application/json; charset=UTF-8",
+    //   },
+    // })
+    //   .then((response) => response.json())
+    //   .catch((error) => console.log(error));
   }
 
   async getFromData() {
@@ -307,7 +323,6 @@ class App extends Component {
                 snakeDots={this.state.snakeDots}
                 dot={this.state.feed}
                 color={this.state.colorFeed}
-                board={this.state.board}
               />
               <Info score={this.state.score} name={this.state.name} />
             </GameArea>
