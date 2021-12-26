@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { API_URL } from "../../config";
+import { Container, Box, GameArea } from "./Game.styled";
 import StartBox from "./StartBox/StartBox";
 import GameOver from "./GameOver/GameOver";
 import GameBox from "./GameBox/GameBox";
@@ -15,7 +16,7 @@ const getRandomCoordinates = () => {
 };
 
 const getRandomColor = () => {
-  let colors = ["red", "yellow", "pink"];
+  let colors = ["red", "yellow", "green"];
   let currentColor = colors[Math.floor(Math.random() * colors.length)];
   return currentColor;
 };
@@ -217,7 +218,7 @@ class App extends Component {
     if (this.state.colorFeed === "yellow") {
       point = 5;
     }
-    if (this.state.colorFeed === "pink") {
+    if (this.state.colorFeed === "green") {
       point = 10;
     }
     this.setState({ score: this.state.score + point });
@@ -270,7 +271,7 @@ class App extends Component {
   }
 
   async getFromData() {
-    const url = API_URL;
+    const url = `${API_URL}/api/user`;
     const response = await fetch(url);
     const res = response.json();
     return res;
@@ -279,28 +280,28 @@ class App extends Component {
   render() {
     if (this.state.status === 0) {
       return (
-        <div className="container">
-          <div className="box">
+        <Container>
+          <Box>
             <StartBox
               onClick={this.handleSubmit}
               onChange={this.handleChange}
             />
-          </div>
-        </div>
+          </Box>
+        </Container>
       );
     } else {
       return (
-        <div className="container">
+        <Container>
           {this.state.status === 3 ? (
-            <div className="box">
+            <Box>
               <GameOver
                 onClick={this.onClick}
                 score={this.gameScore}
                 board={this.state.board}
               />
-            </div>
+            </Box>
           ) : (
-            <div className="game">
+            <GameArea>
               <Buttons onClick={this.onClick} />
               <GameBox
                 snakeDots={this.state.snakeDots}
@@ -309,9 +310,9 @@ class App extends Component {
                 board={this.state.board}
               />
               <Info score={this.state.score} name={this.state.name} />
-            </div>
+            </GameArea>
           )}
-        </div>
+        </Container>
       );
     }
   }

@@ -1,14 +1,15 @@
 import React from "react";
 import PropTypes from "prop-types";
+import { Box } from "./GameBox.styled";
 import Snake from "../Snake/Snake";
 import Feed from "../Feed/Feed";
 
 const GameBox = ({ snakeDots, dot, color }) => {
   return (
-    <div className="game-box">
+    <Box>
       <Snake snakeDots={snakeDots} />
       <Feed dot={dot} color={color} />
-    </div>
+    </Box>
   );
 };
 

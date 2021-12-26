@@ -1,13 +1,13 @@
 import React from "react";
 import PropTypes from "prop-types";
+import { Fruit } from "./Feed.styled";
 
 const Feed = ({ dot, color }) => {
   const style = {
     left: `${dot[0]}%`,
     top: `${dot[1]}%`,
-    backgroundColor: `${color}`,
   };
-  return <div className="snake-feed" style={style}></div>;
+  return <Fruit color={color} style={style}></Fruit>;
 };
 
 Feed.protoTypes = {
