@@ -1,1 +1,1 @@
-export const API_URL = `https://snake-game-app-2021.herokuapp.com`;
+export const API_URL = 'https://snake-game-danilenkova.onrender.com/api`;
