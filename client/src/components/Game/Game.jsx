@@ -1,11 +1,13 @@
-import React, { Component } from "react";
-import { API_URL } from "../config";
-import { Container, Box, GameArea } from "./Game.styled";
-import StartBox from "./StartBox/StartBox";
-import GameOver from "./GameOver/GameOver";
-import GameBox from "./GameBox/GameBox";
-import Buttons from "./Buttons/Buttons";
-import Info from "./Info/Info";
+import React, { Component } from 'react';
+import { Container, Box, GameArea } from './Game.styled';
+import StartBox from './StartBox/StartBox';
+import GameOver from './GameOver/GameOver';
+import GameBox from './GameBox/GameBox';
+import Buttons from './Buttons/Buttons';
+import Info from './Info/Info';
+import axios from 'axios';
+
+const API_URL = process.env.API_URL;
 
 const getRandomCoordinates = () => {
   let min = 2;
@@ -16,7 +18,7 @@ const getRandomCoordinates = () => {
 };
 
 const getRandomColor = () => {
-  let colors = ["red", "yellow", "green"];
+  let colors = ['red', 'yellow', 'green'];
   let currentColor = colors[Math.floor(Math.random() * colors.length)];
   return currentColor;
 };
@@ -24,7 +26,7 @@ const getRandomColor = () => {
 const initialState = {
   status: 0,
   speed: 500,
-  direction: "RIGHT",
+  direction: 'RIGHT',
   snakeDots: [[0, 0]],
   feed: getRandomCoordinates(),
   colorFeed: getRandomColor(),
@@ -32,13 +34,13 @@ const initialState = {
   speedUpLimit: 50,
   board: [],
 };
-let name = "";
+let name = '';
 const setCurrentPlayer = (enteredName) => {
   name = enteredName;
   return name;
 };
 
-class App extends Component {
+class Game extends Component {
   constructor(props) {
     super(props);
     this.state = initialState;
@@ -64,16 +66,16 @@ class App extends Component {
     e = e || window.event;
     switch (e.keyCode) {
       case 38:
-        this.setState({ direction: "UP" });
+        this.setState({ direction: 'UP' });
         break;
       case 40:
-        this.setState({ direction: "DOWN" });
+        this.setState({ direction: 'DOWN' });
         break;
       case 37:
-        this.setState({ direction: "LEFT" });
+        this.setState({ direction: 'LEFT' });
         break;
       case 39:
-        this.setState({ direction: "RIGHT" });
+        this.setState({ direction: 'RIGHT' });
         break;
       case 13:
         this.checkPlay();
@@ -84,17 +86,17 @@ class App extends Component {
 
   onClick = (e) => {
     switch (e.target.id) {
-      case "Pause":
+      case 'Pause':
         this.checkPlay();
         break;
-      case "Restart":
+      case 'Restart':
         this.restart();
         break;
-      case "Newstart":
+      case 'Newstart':
         this.restart();
         break;
-      case "Exit":
-        name = "";
+      case 'Exit':
+        name = '';
         this.setState(initialState);
         break;
       // no default
@@ -133,7 +135,7 @@ class App extends Component {
 
   handleSubmit = (e) => {
     e.preventDefault();
-    if (name === "") {
+    if (name === '') {
       return;
     } else {
       this.setState({ status: 1, snakeDots: [[0, 0]] });
@@ -146,16 +148,16 @@ class App extends Component {
     let head = dots[dots.length - 1];
 
     switch (this.state.direction) {
-      case "RIGHT":
+      case 'RIGHT':
         head = [head[0] + 4, head[1]];
         break;
-      case "LEFT":
+      case 'LEFT':
         head = [head[0] - 4, head[1]];
         break;
-      case "DOWN":
+      case 'DOWN':
         head = [head[0], head[1] + 4];
         break;
-      case "UP":
+      case 'UP':
         head = [head[0], head[1] - 4];
         break;
       // no default
@@ -212,13 +214,13 @@ class App extends Component {
 
   setScorePoint() {
     let point;
-    if (this.state.colorFeed === "red") {
+    if (this.state.colorFeed === 'red') {
       point = 1;
     }
-    if (this.state.colorFeed === "yellow") {
+    if (this.state.colorFeed === 'yellow') {
       point = 5;
     }
-    if (this.state.colorFeed === "green") {
+    if (this.state.colorFeed === 'green') {
       point = 10;
     }
     this.setState({ score: this.state.score + point });
@@ -236,12 +238,10 @@ class App extends Component {
   gameOver() {
     clearInterval(this.timerID);
     this.gameScore = this.state.score;
-    this.postInData().then(
-      this.getFromData().then((res) => {
-        this.setState({ board: res });
-        console.log(this.state.board);
-      })
-    );
+    const user = { name: this.state.name, total: this.gameScore };
+    this.postInData(user);
+    // this.getFromData();
+    console.log(user);
     this.setState(initialState);
     this.setState({
       feed: getRandomCoordinates(),
@@ -253,45 +253,36 @@ class App extends Component {
       speedUpLimit: 50,
       snakeDots: [[0, 0]],
     });
-    this.getFromData().then((res) => {
-      this.setState({ board: res });
-      console.log(this.state.board);
-    });
+    // this.getFromData();
+    console.log(this.state.board);
   }
 
-  async postInData() {
-    const url = `${API_URL}/api/user`;
+  async postInData(user) {
+    const url = `${API_URL}`;
     const postToAdd = {
-      name: this.state.name,
-      score: this.gameScore,
+      name: user.name,
+      total: user.total,
     };
-    const option = {
-      method: "POST",
-      body: JSON.stringify(postToAdd),
-      headers: {
-        "Content-Type": "application/json; charset=UTF-8",
-      },
-    };
-    const response = await fetch(url, option);
-    const res = response.json();
-    return res;
-    // fetch(`${API_URL}/api/user`, {
-    //   method: "POST",
-    //   body: JSON.stringify(postToAdd),
-    //   headers: {
-    //     "Content-Type": "application/json; charset=UTF-8",
-    //   },
-    // })
-    //   .then((response) => response.json())
-    //   .catch((error) => console.log(error));
+    try {
+      const { data } = await axios.post(`${url}/add`, postToAdd);
+      return data;
+    } catch (error) {
+      return error;
+    }
   }
 
-  async getFromData() {
-    const url = `${API_URL}/api/user`;
-    const response = await fetch(url);
-    const res = response.json();
-    return res;
-  }
+  // async getFromData() {
+  //   const url = `${API_URL}/api/user`;
+  //   try {
+  //     const { data } = await axios.get(url);
+  //     this.setState({
+  //       board: [{ name: data.result.name, gameScore: data.result.total }],
+  //     });
+  //     console.log(this.state.board);
+  //   } catch (error) {
+  //     return error;
+  //   }
+  // }
 
   render() {
     if (this.state.status === 0) {
@@ -333,4 +324,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default Game;

@@ -1,7 +1,7 @@
-import styled from "styled-components";
-import red from "./red.png";
-import yellow from "./yellow.png";
-import green from "./green.png";
+import styled from 'styled-components';
+import red from 'components/images/red.png';
+import yellow from 'components/images/yellow.png';
+import green from 'components/images/green.png';
 
 export const Fruit = styled.div`
   position: absolute;
@@ -12,11 +12,11 @@ export const Fruit = styled.div`
   background-color: transparent;
   background-image: ${(props) => {
     switch (props.color) {
-      case "red":
+      case 'red':
         return `url(${red})`;
-      case "yellow":
+      case 'yellow':
         return `url(${yellow})`;
-      case "green":
+      case 'green':
         return `url(${green})`;
       // no default
     }

@@ -21,7 +21,7 @@ const StartBox = ({ onClick, onChange }) => {
           placeholder="Enter name"
           onChange={onChange}
         ></FormInput>
-        <StartBtn type="button" onSubmit={onClick}>
+        <StartBtn type="button" onClick={onClick}>
           Start game
         </StartBtn>
       </Form>
