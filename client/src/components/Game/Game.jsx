@@ -7,7 +7,7 @@ import Buttons from './Buttons/Buttons';
 import Info from './Info/Info';
 import axios from 'axios';
 
-const API_URL = process.env.API_URL;
+const API_URL = process.env.REACT_APP_API_URL;
 
 const getRandomCoordinates = () => {
   let min = 2;
@@ -124,6 +124,7 @@ class Game extends Component {
       status: 1,
       gameScore: 0,
     });
+    this.getFromData();
   }
 
   handleChange = (e) => {
@@ -140,6 +141,7 @@ class Game extends Component {
     } else {
       this.setState({ status: 1, snakeDots: [[0, 0]] });
       this.initialInterval();
+      this.getFromData();
     }
   };
 
@@ -238,10 +240,10 @@ class Game extends Component {
   gameOver() {
     clearInterval(this.timerID);
     this.gameScore = this.state.score;
-    const user = { name: this.state.name, total: this.gameScore };
+    const user = { _id: 'newId', name: this.state.name, total: this.gameScore };
+    this.board = this.state.board;
+    this.board.push(user);
     this.postInData(user);
-    // this.getFromData();
-    console.log(user);
     this.setState(initialState);
     this.setState({
       feed: getRandomCoordinates(),
@@ -253,8 +255,6 @@ class Game extends Component {
       speedUpLimit: 50,
       snakeDots: [[0, 0]],
     });
-    // this.getFromData();
-    console.log(this.state.board);
   }
 
   async postInData(user) {
@@ -271,18 +271,19 @@ class Game extends Component {
     }
   }
 
-  // async getFromData() {
-  //   const url = `${API_URL}/api/user`;
-  //   try {
-  //     const { data } = await axios.get(url);
-  //     this.setState({
-  //       board: [{ name: data.result.name, gameScore: data.result.total }],
-  //     });
-  //     console.log(this.state.board);
-  //   } catch (error) {
-  //     return error;
-  //   }
-  // }
+  async getFromData() {
+    const url = `${API_URL}`;
+    try {
+      const data = await axios.get(url).then((res) => {
+        return res.data.data;
+      });
+      this.setState({
+        board: data.result,
+      });
+    } catch (error) {
+      return error;
+    }
+  }
 
   render() {
     if (this.state.status === 0) {
@@ -304,7 +305,7 @@ class Game extends Component {
               <GameOver
                 onClick={this.onClick}
                 score={this.gameScore}
-                board={this.state.board}
+                board={this.board}
               />
             </Box>
           ) : (

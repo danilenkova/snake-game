@@ -1,6 +1,6 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { UserData, Name } from "./User.styled";
+import React from 'react';
+import PropTypes from 'prop-types';
+import { UserData, Name } from './User.styled';
 
 const User = ({ name, score }) => {
   return (

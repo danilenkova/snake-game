@@ -1,15 +1,15 @@
-import React from "react";
-import PropTypes from "prop-types";
-import User from "./User/User";
-import { UsersList } from "./Leaderboard.styled";
+import React from 'react';
+import PropTypes from 'prop-types';
+import User from './User/User';
+import { UsersList } from './Leaderboard.styled';
 
 const Leaderboard = ({ board }) => {
-  const sortByScore = (a, b) => b.score - a.score;
+  const sortByScore = (a, b) => b.total - a.total;
   let topLeaders = board.sort(sortByScore);
   return (
     <UsersList>
-      {topLeaders.slice(0, 5).map(({ id, name, score }) => {
-        return <User key={id} name={name} score={score} />;
+      {topLeaders.slice(0, 5).map(({ _id, name, total }) => {
+        return <User key={_id} name={name} score={total} />;
       })}
     </UsersList>
   );
